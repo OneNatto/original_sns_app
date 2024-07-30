@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627826840674",
+    "project_id": "original-sns-app",
+    "storage_bucket": "original-sns-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627826840674:android:bc58c3890a6aa0f2972d3b",
+        "android_client_info": {
+          "package_name": "com.example.original_sns_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbhF5EOgpalt56Q11sxD7qWRcQSQdHUo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
