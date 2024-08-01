@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:original_sns_app/conponents/my_bottomnavi.dart';
-import 'package:original_sns_app/services/auth/auth_service.dart';
-import 'package:original_sns_app/screens/chat_screen.dart';
+import 'package:original_sns_app/components/my_bottomnavi.dart';
+import 'package:original_sns_app/provider/auth_provider.dart';
+import 'package:original_sns_app/screens/chat/chat_screen.dart';
 
 class AllUserScreen extends ConsumerWidget {
   const AllUserScreen({super.key});
@@ -15,7 +15,7 @@ class AllUserScreen extends ConsumerWidget {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final loginedUser = auth.currentUser;
     //サービス
-    final service = ref.read(authServiceProvider);
+    final authViewModel = ref.read(authViewModelProvider.notifier);
 
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -26,7 +26,7 @@ class AllUserScreen extends ConsumerWidget {
         leading: IconButton(
             icon: const Icon(Icons.exit_to_app),
             onPressed: () {
-              service.signOut();
+              authViewModel.signOut();
               Navigator.of(context).pushReplacementNamed('/auth_gate');
             }),
       ),

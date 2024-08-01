@@ -1,9 +1,12 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:original_sns_app/screens/auth/login_screen.dart';
+import 'package:original_sns_app/screens/auth/register_screen.dart';
+
 import 'package:flutter/material.dart';
-import 'package:original_sns_app/screens/login_screen.dart';
-import 'package:original_sns_app/screens/register_screen.dart';
 
 class LoginOrRegister extends StatefulWidget {
-  const LoginOrRegister({super.key});
+  final String? error;
+  const LoginOrRegister({super.key, this.error});
 
   @override
   State<LoginOrRegister> createState() => _LoginOrRegisterState();

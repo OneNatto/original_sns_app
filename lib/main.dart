@@ -2,10 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:original_sns_app/firebase_options.dart';
-import 'package:original_sns_app/screens/all_user_screen.dart';
-import 'package:original_sns_app/screens/post_screen.dart';
 import 'package:original_sns_app/screens/splash_screen.dart';
 import 'package:original_sns_app/services/auth/auth_gate.dart';
+
+import 'screens/chat/all_user_screen.dart';
+import 'screens/post/post_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

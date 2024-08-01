@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
-import 'package:original_sns_app/conponents/my_button.dart';
-import 'package:original_sns_app/conponents/my_textfield.dart';
-import 'package:original_sns_app/services/auth/auth_service.dart';
+import 'package:original_sns_app/components/my_button.dart';
+import 'package:original_sns_app/components/my_textfield.dart';
+import 'package:original_sns_app/provider/auth_provider.dart';
 
-class LoginScreen extends ConsumerWidget {
+class RegisterScreen extends ConsumerWidget {
   final void Function()? onPressed;
 
-  LoginScreen({
+  RegisterScreen({
     Key? key,
     required this.onPressed,
   }) : super(key: key);
 
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authService = ref.read(authServiceProvider);
+    final authViewModel = ref.read(authViewModelProvider.notifier);
+
     final screenWidth = MediaQuery.of(context).size.width;
     double contentWidth;
 
@@ -30,8 +32,9 @@ class LoginScreen extends ConsumerWidget {
       contentWidth = MediaQuery.of(context).size.width * 0.5;
     }
 
-    void loginFunction() async {
-      final result = await authService.signIn(
+    Future registerFunction() async {
+      final result = await authViewModel.signUp(
+        nameController.text,
         emailController.text,
         passwordController.text,
       );
@@ -39,10 +42,11 @@ class LoginScreen extends ConsumerWidget {
       if (!result) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('ログインに失敗しました。正しいメールアドレスとパスワードを入力してください。'),
+            content: Text('登録に失敗しました。メールアドレスかパスワードの形式に誤りがあります。'),
           ),
         );
 
+        nameController.clear();
         emailController.clear();
         passwordController.clear();
       }
@@ -61,6 +65,15 @@ class LoginScreen extends ConsumerWidget {
                 width: 150,
                 child: Lottie.asset('assets/lottie/Aniki Hamster.json'),
               ),
+
+              //ユーザー名前入力ボックス
+              MyField(
+                hintText: 'ユーザーネームを入力',
+                obscureText: false,
+                controller: nameController,
+              ),
+
+              const SizedBox(height: 10),
 
               //Eメール入力ボックス
               MyField(
@@ -82,8 +95,8 @@ class LoginScreen extends ConsumerWidget {
 
               //ボタン
               MyButton(
-                onTap: loginFunction,
-                text: 'ログイン',
+                onTap: registerFunction,
+                text: '登録',
               ),
 
               const SizedBox(height: 10),
@@ -92,7 +105,7 @@ class LoginScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'アカウントをお持ちでない方｜',
+                    'アカウントをお持ちの方｜',
                     style: TextStyle(color: Colors.grey[400]),
                   ),
                   TextButton(

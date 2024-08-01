@@ -17,7 +17,7 @@ class MyBottomNavigation extends StatelessWidget {
       unselectedItemColor: Colors.grey[600],
       items: [
         BottomNavigationBarItem(
-          label: 'みんなのつぶやき',
+          label: "みんなのつぶやき",
           icon: SizedBox(
             width: width,
             height: 40,
@@ -32,7 +32,7 @@ class MyBottomNavigation extends StatelessWidget {
           ),
         ),
         BottomNavigationBarItem(
-          label: 'トーク',
+          label: "チャット",
           icon: SizedBox(
             width: width,
             height: 40,
