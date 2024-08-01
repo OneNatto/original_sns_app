@@ -1,22 +1,20 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:original_sns_app/conponents/my_bottomnavi.dart';
-import 'package:original_sns_app/conponents/my_post.dart';
-import 'package:original_sns_app/conponents/my_textfield.dart';
-import 'package:original_sns_app/provider/username_provider.dart';
-import 'package:original_sns_app/services/auth/auth_service.dart';
-import 'package:original_sns_app/services/post/post_service.dart';
-
+import 'package:original_sns_app/components/my_bottomnavi.dart';
+import 'package:original_sns_app/components/my_post.dart';
+import 'package:original_sns_app/components/my_textfield.dart';
+import 'package:original_sns_app/provider/auth_provider.dart';
+import 'package:original_sns_app/provider/post_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../models/post_model.dart';
 
 class PostScreen extends ConsumerWidget {
   const PostScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authService = ref.read(authServiceProvider);
+    final authViewModel = ref.read(authViewModelProvider.notifier);
     final screenWidth = MediaQuery.of(context).size.width;
     double contentWidth;
 
@@ -28,6 +26,8 @@ class PostScreen extends ConsumerWidget {
       contentWidth = MediaQuery.of(context).size.width * 0.7;
     }
 
+    final postState = ref.watch(postViewModelProvider);
+
     return Scaffold(
       backgroundColor: Colors.blue[100],
       appBar: AppBar(
@@ -35,7 +35,7 @@ class PostScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(Icons.exit_to_app),
           onPressed: () {
-            authService.signOut();
+            authViewModel.signOut();
             Navigator.of(context).pushReplacementNamed('/auth_gate');
           },
         ),
@@ -44,7 +44,17 @@ class PostScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: PostsList(width: contentWidth),
+            //child: PostsList(width: contentWidth),
+            child: postState.when(
+                data: (posts) {
+                  return PostsList(
+                    width: contentWidth,
+                    posts: posts,
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stackTrace) =>
+                    Center(child: Text('Error: $error'))),
           ),
           PostAdd(),
         ],
@@ -65,11 +75,11 @@ class PostAdd extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postService = ref.read(postServiceProvider);
+    final postViewModel = ref.read(postViewModelProvider.notifier);
     final username = ref.watch(userNameProvider);
 
     void addPost() async {
-      postService.addPost(username, textController.text);
+      postViewModel.addPost(username, textController.text);
       textController.clear();
     }
 
@@ -90,7 +100,11 @@ class PostAdd extends ConsumerWidget {
             ),
             IconButton(
               icon: const Icon(Icons.send),
-              onPressed: () => addPost(),
+              onPressed: () {
+                if (textController.text != "") {
+                  addPost();
+                }
+              },
             ),
           ],
         ),
@@ -101,43 +115,36 @@ class PostAdd extends ConsumerWidget {
 
 class PostsList extends StatelessWidget {
   final double width;
+  final List<Post> posts;
   const PostsList({
     Key? key,
     required this.width,
+    required this.posts,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: PostService().getPost(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Container(
-            width: width,
-            padding: const EdgeInsets.only(top: 8.0),
-            child: ListView(
-              reverse: true,
-              children: snapshot.data!.docs.map((document) {
-                DateTime dateTime =
-                    DateFormat('yyyy-MM-dd HH:mm:ss').parse(document['time']);
+    return Container(
+      width: width,
+      padding: const EdgeInsets.only(top: 8.0),
+      child: ListView(
+        reverse: true,
+        children: posts.map((post) {
+          DateTime dateTime =
+              DateFormat('yyyy-MM-dd HH:mm:ss').parse(post.time);
 
-                String time = DateFormat('M月d日 HH:mm').format(dateTime);
+          String time = DateFormat('M月d日 HH:mm').format(dateTime);
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: PostWidget(
-                    name: document['name'],
-                    content: document['content'],
-                    time: time,
-                  ),
-                );
-              }).toList(),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: PostWidget(
+              name: post.name,
+              content: post.content,
+              time: time,
             ),
           );
-        } else {
-          return Container();
-        }
-      },
+        }).toList(),
+      ),
     );
   }
 }
